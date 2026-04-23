@@ -1,0 +1,387 @@
+/* RESET CSS */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* VARIABLES */
+:root {
+    --dark-color: rgb(2, 4, 8);
+    --dark-hover: rgba(255, 255, 255, 0.1);
+
+    --light-color: rgb(245, 245, 245);
+    --light-hover: rgba(0, 0, 0, 0.1);
+
+    --book-width:  clamp(280px, 85vw, 475px);
+    --book-height: calc(var(--book-width) * 770 / 475);
+
+    --page-width:      calc(var(--book-width)  - 5px);
+    --page-height:     calc(var(--book-height) * 736 / 770);
+    --page-top-offset: calc((var(--book-height) - var(--page-height)) / 2);
+
+    --cover-translate-x: calc(var(--book-width) * 0.306);
+}
+
+/* ─── GENERAL ─── */
+body {
+    width: 100%;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: monospace, sans-serif;
+    font-size: 0.5rem;
+    transition: background-color 0.3s;
+    overflow: hidden;
+}
+
+a {
+    text-decoration: none;
+    color: var(--dark-color);
+}
+
+input {
+    display: none;
+}
+
+.background_blur {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background-image: url('./assets/images/background.png');
+    background-size: cover;
+    background-position: center;
+
+    filter: blur(12px);
+    transform: scale(1.1);
+
+    z-index: -1;
+}
+
+/* ─── MAIN ─── */
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+#toggle-mode-btn {
+    width: 2rem;
+    height: 2rem;
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    background-color: transparent;
+    transition: background-color 0.3s;
+    cursor: pointer;
+}
+
+#responsive-warning {
+    display: none;
+}
+
+/* ─── FLIP BOOK ─── */
+#flip_book {
+    width: var(--book-width);
+    height: var(--book-height);
+    position: relative;
+    perspective: 2000px;
+    transition: transform 1s;
+}
+
+/* ─── SHARED COVER STYLES ─── */
+.front_cover,
+.back_cover {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 2.5px 5px 5px 2.5px;
+    background-image: url(./assets/images/flip_book_edge_shading.webp);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgb(157, 142, 57);
+    box-shadow: 0 0 5px 0 rgb(25, 25, 25, 0.25);
+}
+
+/* ─── FRONT COVER ─── */
+.front_cover {
+    position: absolute;
+    background-image: url('./assets/images/front-back.jpg');
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    transform-origin: center left;
+    transition: transform 1.5s, z-index 0.5s 0.5s;
+    z-index: 99;
+    /*
+     * preserve-3d lets the two child labels each live on their own
+     * face of the cover so backface-visibility works correctly.
+     */
+    transform-style: preserve-3d;
+}
+
+.front_cover label {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    cursor: pointer;
+}
+
+/* Front-face label — hidden once cover flips past 90 deg */
+#cover {
+    backface-visibility: hidden;
+}
+
+/*
+ * Back-face label — rotated 180 deg so it faces outward when the cover
+ * is open. Hidden while closed; becomes clickable to close the cover.
+ */
+#cover_close {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    cursor: pointer;
+    transform: rotateY(180deg);
+    backface-visibility: hidden;
+    z-index: 101;
+}
+
+/* ─── BACK COVER ─── */
+/*
+ * The back cover now behaves exactly like the front cover:
+ * - position: absolute so it sits in the same stacking context
+ * - transform-origin: center left — flips from the spine edge
+ * - z-index: 0 keeps it behind all pages by default
+ * - transition mirrors the front cover's 1.5 s flip
+ */
+.back_cover {
+    position: absolute;
+    background-image: url('./assets/images/front-back.jpg');
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    transform-origin: center left;
+    transition: transform 1.5s, z-index 0s 1.5s;
+    z-index: 0;
+}
+
+/* Label fills the entire back cover face and catches clicks */
+.back_cover label {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    cursor: pointer;
+    z-index: 1;
+}
+
+/* ─── PAGES ─── */
+.page {
+    width: var(--page-width);
+    height: var(--page-height);
+    position: absolute;
+    top: var(--page-top-offset);
+    left: -0.5px;
+    border-radius: 0 5px 5px 0;
+    background-color: white;
+    transform-origin: left;
+    transform-style: preserve-3d;
+    transform: rotateY(0deg);
+    transition-duration: 0.5s;
+}
+
+.front_page {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    backface-visibility: hidden;
+}
+
+.front_page label {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    cursor: pointer;
+    z-index: 100;
+}
+
+.back_page {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    backface-visibility: hidden;
+    transform: rotateY(180deg);
+    z-index: 100;
+}
+
+.back_page label {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    cursor: pointer;
+    z-index: 100;
+}
+
+.edge_shading {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 98;
+    object-fit: cover;
+}
+
+.front_content {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 1px;
+    border-radius: 0 5px 5px 0;
+    z-index: 97;
+    object-fit: cover;
+}
+
+.back_content {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    border-radius: 5px 0 0 5px;
+    z-index: 97;
+    object-fit: cover;
+}
+
+/* ─── PAGE Z-INDEX STACKING ─── */
+#page1 { z-index: 8; }
+#page2 { z-index: 5; }
+#page3 { z-index: 4; }
+#page4 { z-index: 3; }
+#page5 { z-index: 2; }
+#page6 { z-index: 1; }
+
+/* ─── COVER OPEN STATE ─── */
+#cover_checkbox:checked ~ #flip_book {
+    transform: translateX(var(--cover-translate-x));
+}
+
+#cover_checkbox:checked ~ #flip_book .front_cover {
+    transform: rotateY(-180deg);
+    transition: transform 1.5s, z-index 0.5s 0.5s;
+    z-index: 1;
+}
+
+#cover_checkbox:checked ~ #flip_book #cover {
+    width: 80%;
+    height: 80%;
+    position: absolute;
+}
+
+/* ─── BACK COVER FLIP STATE ─── */
+/*
+ * When back_cover_checkbox is checked, the back cover flips from right
+ * to left — identical motion to the front cover opening.
+ * z-index jumps above pages so it animates over them.
+ */
+#back_cover_checkbox:checked ~ #flip_book .back_cover {
+    transform: rotateY(-180deg);
+    z-index: 100;
+    transition: transform 1.5s, z-index 0s 0s;
+}
+
+/* ─── PAGE FLIP STATES ─── */
+#page1_checkbox:checked ~ #flip_book #page1 { transform: rotateY(-180deg); z-index: 3;  }
+#page2_checkbox:checked ~ #flip_book #page2 { transform: rotateY(-180deg); z-index: 4;  }
+#page3_checkbox:checked ~ #flip_book #page3 { transform: rotateY(-180deg); z-index: 5;  }
+#page4_checkbox:checked ~ #flip_book #page4 { transform: rotateY(-180deg); z-index: 6;  }
+#page5_checkbox:checked ~ #flip_book #page5 { transform: rotateY(-180deg); z-index: 9;  }
+#page6_checkbox:checked ~ #flip_book #page6 { transform: rotateY(-180deg); z-index: 12; }
+
+/* ─── TABLET + MOBILE (≤ 960 px) ─── */
+@media (max-width: 960px) {
+    :root {
+        --book-width:        min(calc(50vw - 10px), calc(70dvh * 475 / 770));
+        --book-height:       calc(var(--book-width) * 770 / 475);
+        --cover-translate-x: calc(var(--book-width) / 2);
+    }
+}
+
+/* ─── LANDSCAPE PHONE ─── */
+@media (max-height: 500px) and (orientation: landscape) {
+    :root {
+        --book-height:       82dvh;
+        --book-width:        calc(var(--book-height) * 475 / 770);
+        --cover-translate-x: calc(var(--book-width) / 2);
+    }
+}
+
+/* ─── SPINE / GUTTER SHADOWS ─── */
+.front_page::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 35%;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.30) 0%,
+        rgba(0, 0, 0, 0.08) 50%,
+        transparent        100%
+    );
+    z-index: 200;
+    pointer-events: none;
+}
+
+.back_page::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 35%;
+    height: 100%;
+    background: linear-gradient(
+        to left,
+        rgba(0, 0, 0, 0.30) 0%,
+        rgba(0, 0, 0, 0.08) 50%,
+        transparent        100%
+    );
+    z-index: 200;
+    pointer-events: none;
+}
+
+.front_cover::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 35%;
+    height: 100%;
+    background: linear-gradient(
+        to left,
+        rgba(0, 0, 0, 0.28) 0%,
+        rgba(0, 0, 0, 0.06) 55%,
+        transparent         100%
+    );
+    z-index: 200;
+    pointer-events: none;
+}

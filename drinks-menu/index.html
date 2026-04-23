@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Flip Book</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="./style.css">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Script -->
+    <script src="./script.js" defer></script>
+</head>
+
+<body>
+    <!-- Background -->
+    <div class="background_blur"></div>
+    <main>
+        <input type="checkbox" id="cover_checkbox">
+        <input type="checkbox" id="back_cover_checkbox">
+        <input type="checkbox" id="page1_checkbox">
+        <input type="checkbox" id="page2_checkbox">
+        <input type="checkbox" id="page3_checkbox">
+        <input type="checkbox" id="page4_checkbox">
+        <input type="checkbox" id="page5_checkbox">
+
+        <!-- Flip Book -->
+        <div id="flip_book">
+            <div class="front_cover">
+                <!-- Front face: opens the cover -->
+                <label for="cover_checkbox" id="cover"></label>
+                <!-- Back face: closes the cover (only visible when cover is open) -->
+                <label for="cover_checkbox" id="cover_close"></label>
+            </div>
+
+            <div class="page" id="page1">
+                <div class="front_page">
+                    <label for="page1_checkbox"></label>
+                    <img class="edge_shading" src="./assets/images/front_page_edge_shading.webp" alt="Front page edge shading">
+                    <img class="front_content" src="./assets/images/pages/drinks menu 1.avif" alt="Front content">
+                </div>
+
+                <div class="back_page">
+                    <label for="page1_checkbox"></label>
+                    <img class="edge_shading" src="./assets/images/back_page_edge_shading.webp" alt="Back page edge shading">
+                    <img class="back_content" src="./assets/images/pages/drinks menu 2.avif" alt="Back content">
+                </div>
+            </div>
+
+            <div class="back_cover">
+                <!-- Clicking this flips the back cover, mirroring how the front cover opens -->
+                <label for="back_cover_checkbox"></label>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>
