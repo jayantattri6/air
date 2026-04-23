@@ -142,7 +142,7 @@ View All Menu
 
 
 
-#---------- MANU ----------#
+#---------- MENU ----------#
 
 Special Selection
 
